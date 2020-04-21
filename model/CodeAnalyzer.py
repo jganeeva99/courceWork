@@ -420,11 +420,11 @@ class CodeAnalyzer:
 
 
 if __name__ == "__main__":
-    file = open("../tests/8 - Разыменование нулевого указателя/test81.cpp", mode="r", encoding="utf8")
+    file = open("../tests/test5.cpp", mode="r", encoding="utf8")
     source = []
     for line in file:
         source.append(line)
     codeA = CodeAnalyzer(source)
-    codeA.null_pointer_derefence()
+    codeA.search_sql_injection()
 
 
