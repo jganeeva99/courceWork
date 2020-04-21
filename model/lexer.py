@@ -35,7 +35,7 @@ class Lexer():
         # Point
         self.lexer.add("POINT", r'\.')
 
-        self.lexer.add('OPERATION', r'[\+\-\*/]')
+        self.lexer.add('OPERATION', r'[\+\-\*/%]')
         self.lexer.add('COMPARISON', r'(==|<|>|<=|>=)')
         self.lexer.add('COMMA', r'\,')
         self.lexer.add('SEMI_COLON', r'\;')

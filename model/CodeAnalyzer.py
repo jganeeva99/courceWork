@@ -344,8 +344,9 @@ class CodeAnalyzer:
         open_brackets = 0
         find_thread = False
         for i in range(len(self.source)):
-            if "{0}(".format(self.thread_funcs[0]) in self.source[i]:
-                find_thread = True
+            for j in range(len(self.thread_funcs)):
+                if "{0}(".format(self.thread_funcs[j]) in self.source[i]:
+                    find_thread = True
             if "{" in self.source[i]:
                 open_brackets += 1
             if "}" in self.source[i]:
