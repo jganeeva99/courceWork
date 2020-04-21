@@ -385,7 +385,6 @@ class CodeAnalyzer:
                     mutex_count_dict[mutex_name] += 1;
                 else:
                     error.append(i);
-                    return error
             if "pthread_mutex_unlock" in self.source[i]:
                 mutex_name = self.source[i].split("&")[1].split(")")[0];
                 if (mutex_count_dict[mutex_name] == 1):
