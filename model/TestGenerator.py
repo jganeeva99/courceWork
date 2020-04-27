@@ -81,6 +81,7 @@ class TestGenerator:
         f.write('#include <iostream>' + '\n' + 'using namespace std;' + '\n\n' + 'int main(){' + '\n')
         flag = 1
         flag1 = 1
+        flag2 = 1
         for i in range(raund):
             k = random.randint(1, 9)  # i опредлеяет, вставлять ошибочный код или нет
             k = k % 2
@@ -129,7 +130,7 @@ class TestGenerator:
                     if k not in self.d7:
                         self.d7.append(k)
                         f.write(y)
-                elif j == 7 and flag == 1 and flag1 == 1:
+                elif j == 7 and flag == 1 and flag1 == 1 and flag2 == 1:
                     f = open('/Users/jganeeva/Desktop/test.cpp', 'tw', encoding='utf-8')
                     y = random.choice(x)
                     f.write(y)
@@ -140,13 +141,16 @@ class TestGenerator:
                     if k not in self.d9:
                         self.d9.append(k)
                         f.write(y)
-                elif j == 9 and flag1 == 1 and flag == 1:
+                elif j == 9 and flag1 == 1 and flag == 1 and flag2 == 1:
                     f = open('/Users/jganeeva/Desktop/test.cpp', 'tw', encoding='utf-8')
                     y = random.choice(x)
                     f.write(y)
                     flag1 = 0
-                elif j == 10:
-                    pass
+                elif j == 10 and flag == 1 and flag1 == 1 and flag2 == 1:
+                    f = open('/Users/jganeeva/Desktop/test.cpp', 'tw', encoding='utf-8')
+                    y = random.choice(x)
+                    f.write(y)
+                    flag2 = 0
                 elif j == 11:
                     y = random.choice(x)
                     k = x.index(y)
