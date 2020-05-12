@@ -389,9 +389,11 @@ class CodeAnalyzer:
                 mutex_name = self.source[i].split("&")[1].split(")")[0];
                 if (mutex_count_dict[mutex_name] == 1):
                     mutex_count_dict[mutex_name] -= 1;
+                else:
+                    error.append(i)
         for keyvalue in mutex_count_dict.items():
             key, value = keyvalue[0], keyvalue[1]
-            if (value != 0):
+            if value != 0 and last_dict[key] not in error:
                 error.append(last_dict[key])
         return error
 
@@ -400,11 +402,11 @@ class CodeAnalyzer:
         error = list()
         for i in range(len(self.source)):
             n = 0
-            if " int " in self.source[i] \
-                    or "float " in self.source[i] \
-                    or "double " in self.source[i] \
-                    or "bool " in self.source[i] \
-                    or "char " in self.source[i]:
+            if "int" in self.source[i] \
+                    or "float" in self.source[i] \
+                    or "double" in self.source[i] \
+                    or "bool" in self.source[i] \
+                    or "char" in self.source[i]:
                 n += 1
                 for j in self.source[i]:
                     if j == '(' or j == '{':
