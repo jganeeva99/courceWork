@@ -7,6 +7,7 @@ class Lexer():
 
     def _add_tokens(self):
         # Keywords
+        self.lexer.add('AT', r'atomic<int>')
         self.lexer.add('DIR', r'\#(include|define)')
         self.lexer.add('INCLUDE_CONTENT', r'\<[a-zZ-z.]+\>')
         self.lexer.add('SCANF', r'scanf')
@@ -40,6 +41,8 @@ class Lexer():
         self.lexer.add('COMMA', r'\,')
         self.lexer.add('SEMI_COLON', r'\;')
         # Classes and functions names and variables
+        self.lexer.add('LOAD', r'load');
+        self.lexer.add('STORE', r'store')
         self.lexer.add('CONNECTION_CLASS', r'QSqlQuery')
         self.lexer.add('DB', r'QSqlDatabase')
         self.lexer.add('EXEC_FUNC', r'exec')

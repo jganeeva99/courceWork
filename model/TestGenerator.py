@@ -1,5 +1,8 @@
 from typing import List
 import random
+from os import path
+import os
+
 
 class TestGenerator:
     def __init__(self):
@@ -73,11 +76,19 @@ class TestGenerator:
                          self.err_code9, self.err_code10, self.err_code11, self.err_code12]
         self.d = [self.d1, self.d2, self.d3, self.d4, self.d5, self.d6, self.d7, self.d8, self.d9, self.d10, self.d11,
                   self.d12]
+        self.desktop_path = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop') + r"\test"
+        self.file_name = r'\test.cpp';
 
     def generateTests(self):
-        raund = random.randint(1, 5)  # число генераций кода
+        raund = random.randint(1, 100)  # число генераций кода
         w_r = []  # индексы правильных тестовых вариантов, которые были
-        f = open('/Users/jganeeva/Desktop/test.cpp', 'tw', encoding='utf-8')
+        cnt = 0
+        while os.path.isfile(self.desktop_path + self.file_name):
+            cnt += 1
+            new_name = r'\test' + str(cnt) + '.cpp'
+            self.file_name = new_name
+        f = open(self.desktop_path + self.file_name, 'tw', encoding='utf-8')
+        # print(self.desktop_path + self.file_name);
         f.write('#include <iostream>' + '\n' + 'using namespace std;' + '\n\n' + 'int main(){' + '\n')
         flag = 1
         flag1 = 1
@@ -131,7 +142,7 @@ class TestGenerator:
                         self.d7.append(k)
                         f.write(y)
                 elif j == 7 and flag == 1 and flag1 == 1 and flag2 == 1:
-                    f = open('/Users/jganeeva/Desktop/test.cpp', 'tw', encoding='utf-8')
+                    f = open(self.desktop_path + self.file_name, 'tw', encoding='utf-8')
                     y = random.choice(x)
                     f.write(y)
                     flag = 0
@@ -142,12 +153,12 @@ class TestGenerator:
                         self.d9.append(k)
                         f.write(y)
                 elif j == 9 and flag1 == 1 and flag == 1 and flag2 == 1:
-                    f = open('/Users/jganeeva/Desktop/test.cpp', 'tw', encoding='utf-8')
+                    f = open(self.desktop_path + self.file_name, 'tw', encoding='utf-8')
                     y = random.choice(x)
                     f.write(y)
                     flag1 = 0
                 elif j == 10 and flag == 1 and flag1 == 1 and flag2 == 1:
-                    f = open('/Users/jganeeva/Desktop/test.cpp', 'tw', encoding='utf-8')
+                    f = open(self.desktop_path + self.file_name, 'tw', encoding='utf-8')
                     y = random.choice(x)
                     f.write(y)
                     flag2 = 0

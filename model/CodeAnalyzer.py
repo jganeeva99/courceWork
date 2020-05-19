@@ -1,4 +1,5 @@
 from model.lexer import *
+import copy
 
 
 class CodeAnalyzer:
@@ -63,11 +64,14 @@ class CodeAnalyzer:
         variables = []
         for line in self.source:
             program_code += line
-        lexer = Lexer().get_lexer()
-        tokens = lexer.lex(program_code)
-        for token in tokens:
-            if token.gettokentype() == 'VAR' and token.value not in variables:
-                variables.append(token.value)
+        try:
+            lexer = Lexer().get_lexer()
+            tokens = lexer.lex(program_code)
+            for token in tokens:
+                if token.gettokentype() == 'VAR' and token.value not in variables:
+                    variables.append(token.value)
+        except Exception:
+            return []
 
         for i in range(len(self.source)):
             dangerous_variables = []
@@ -138,26 +142,31 @@ class CodeAnalyzer:
 
         for line in self.source:
             program_code += line
-        lexer = Lexer().get_lexer()
-        tokens = lexer.lex(program_code)
+        try:
+            lexer = Lexer().get_lexer()
+            tokens = lexer.lex(program_code)
 
-        for token in tokens:
-            if token.gettokentype() == 'CLASS':
-                class_names.append(tokens.next().value)
-            if token.gettokentype() == 'PTR_TYPE' and token.value not in ptr_types:
-                ptr_types.append(token.value)
-            if token.gettokentype() == 'VAR' and token.value not in variables and token.value not in class_names:
-                variables.append(token.value)
+            for token in tokens:
+                if token.gettokentype() == 'CLASS':
+                    class_names.append(tokens.next().value)
+                if token.gettokentype() == 'PTR_TYPE' and token.value not in ptr_types:
+                    ptr_types.append(token.value)
+                if token.gettokentype() == 'VAR' and token.value not in variables and token.value not in class_names:
+                    variables.append(token.value)
 
+        except Exception:
+            return []
         for i in range(len(self.source)):
             for ptr_type in ptr_types:
                 if self.source[i].find(ptr_type) != -1:
                     for var in variables:
-                        if self.source[i].find(var) != -1 and self.source[i].find("=") != -1 and (self.source[i].find("new") != -1 or self.source[i].find("malloc") != -1):
+                        if self.source[i].find(var) != -1 and self.source[i].find("=") != -1 and (
+                                self.source[i].find("new") != -1 or self.source[i].find("malloc") != -1):
                             dangerous_variables.append(var)
                     for j in range(i, len(self.source)):
                         for d_var in dangerous_variables:
-                            if (self.source[j].find("delete") != -1 or self.source[j].find("free") != -1) and self.source[j].find(d_var) != -1:
+                            if (self.source[j].find("delete") != -1 or self.source[j].find("free") != -1) and \
+                                    self.source[j].find(d_var) != -1:
                                 dangerous_variables.remove(d_var)
                     if len(dangerous_variables) > 0:
                         error.append(i)
@@ -174,7 +183,8 @@ class CodeAnalyzer:
                 char_name = self.source[i].split('(')[1]
                 char_name = char_name.split(')')[0]
                 char_name = char_name.split(',')[0]
-                files.append(char_name)
+                if char_name != "":
+                    files.append(char_name)
                 for num in range(i - 10, i):
                     if num in range(len(self.source)):
                         for func in safe_functions:
@@ -195,17 +205,21 @@ class CodeAnalyzer:
         safe_pointers = []
         for line in self.source:
             program_code += line
-        lexer = Lexer().get_lexer()
-        tokens = lexer.lex(program_code)
+        try:
+            lexer = Lexer().get_lexer()
+            tokens = lexer.lex(program_code)
 
-        is_pointer_list = False
-        for token in tokens:
-            if token.gettokentype() == 'PTR_TYPE':
-                is_pointer_list = True
-            if token.gettokentype() == 'SEMI_COLON':
-                is_pointer_list = False
-            if is_pointer_list and token.gettokentype() == 'VAR':
-                pointers.append(token.value)
+            is_pointer_list = False
+            for token in tokens:
+                if token.gettokentype() == 'PTR_TYPE':
+                    is_pointer_list = True
+                if token.gettokentype() == 'SEMI_COLON':
+                    is_pointer_list = False
+                if is_pointer_list and token.gettokentype() == 'VAR':
+                    pointers.append(token.value)
+
+        except Exception:
+            return []
 
         for i in range(len(self.source)):
             if self.source[i].find("if") != -1:
@@ -238,27 +252,29 @@ class CodeAnalyzer:
                 if ' + ' in line:
                     f = scissors(line.split("+", 1)[0].strip(), numbermas, numvalmas)
                     s = scissors(line.split("+", 1)[1].strip(), numbermas, numvalmas)
-                    return f+s
+                    return f + s
                 elif ' - ' in line:
                     f = scissors(line.split("-", 1)[0].strip(), numbermas, numvalmas)
                     s = scissors(line.split("-", 1)[1].strip(), numbermas, numvalmas)
-                    return f-s
+                    return f - s
                 elif ' * ' in line:
                     f = scissors(line.split("*", 1)[0].strip(), numbermas, numvalmas)
                     s = scissors(line.split("*", 1)[1].strip(), numbermas, numvalmas)
-                    return f*s
+                    return f * s
                 elif ' / ' in line:
                     f = scissors(line.split("/", 1)[0].strip(), numbermas, numvalmas)
                     s = scissors(line.split("/", 1)[1].strip(), numbermas, numvalmas)
-                    return f//s
+                    return f // s
                 else:
                     return -1
+
         error = []
-        #warnings = []
+        # warnings = []
         numbers = []
         numervalues = []
         numberplaces = []
         int_max_val = 2147483647
+        code_backup = copy.deepcopy(self.source)
         for i in range(len(self.source)):
             if 'int ' in self.source[i]:
                 if 'main' not in self.source[i] and 'for' not in self.source[i] and ' ' in self.source[i]:
@@ -275,8 +291,8 @@ class CodeAnalyzer:
                     numberplaces.append(i)
                     numervalues.append(startval)
                 elif 'for ' in self.source[i]:
-                    znak=self.source[i].split(";")[1]
-                    if ('>' in znak) and ('++' or '+='in self.source[i]):
+                    znak = self.source[i].split(";")[1]
+                    if ('>' in znak) and ('++' or '+=' in self.source[i]):
                         if '*=' in self.source[i]:
                             a = toInt(self.source[i].split(";")[0].split('=')[1].strip(), numbers, numervalues)
                             b = toInt(self.source[i].split(";")[1].split('>')[1].strip(), numbers, numervalues)
@@ -308,7 +324,8 @@ class CodeAnalyzer:
                         addval = scissors(self.source[i].split("=")[1].split(";")[0].strip(), numbers, numervalues)
                         numervalues[numbers.index(inta)] -= addval
                     elif ' = ' in self.source[i]:
-                        numervalues[numbers.index(inta)] = scissors(self.source[i].split("=")[1].split(";")[0].strip(), numbers, numervalues)
+                        numervalues[numbers.index(inta)] = scissors(self.source[i].split("=")[1].split(";")[0].strip(),
+                                                                    numbers, numervalues)
                     elif ' *= ' in self.source[i]:
                         addval = scissors(self.source[i].split("=")[1].split(";")[0].strip(), numbers, numervalues)
                         numervalues[numbers.index(inta)] *= addval
@@ -318,6 +335,7 @@ class CodeAnalyzer:
         for i in range(len(numbers)):
             if abs(numervalues[i]) > int_max_val:
                 error.append(numberplaces[i])
+        self.source = copy.deepcopy(code_backup)
         return error
 
     # Обнаружение уязвимостей типа 10:
@@ -370,7 +388,68 @@ class CodeAnalyzer:
 
     # Обнаружение уязвимостей типа 11:
     def incorr_rw_synchr(self):
+        program_code = ""
+        global_vars = []
+        thread_funcs = []
+        start_main = False
+        start_func = False
+        start_var = False
+
+        for s in self.source:
+            if r"pthread_create" in s or r"CreateThread" in s:
+                thread_funcs.append(s.split('(', 1)[1].split(',')[2].strip().replace('&', ''))
+
+        for line in self.source:
+            program_code += line
+        try:
+            lexer = Lexer().get_lexer()
+            tokens = lexer.lex(program_code)
+
+            for token in tokens:
+                if token.gettokentype() == 'INT' or token.gettokentype() == 'BOOL' or token.gettokentype() == 'STRING_TYPE' or token.gettokentype() == 'AT':
+                    start_var = True
+                    continue
+                if token.gettokentype() == 'SEMI_COLON':
+                    start_var = False
+                    continue
+                if token.gettokentype() == 'OPEN_PAREN' and start_var:
+                    start_var = False
+                    continue
+                if token.gettokentype() == 'MAIN':
+                    start_main = True
+                    continue
+                if token.gettokentype() == 'OPEN_BRACE':
+                    start_func = True
+                    continue
+                if token.gettokentype() == 'CLOSE_BRACE':
+                    start_func = False
+                    continue
+
+                if start_var and token.gettokentype() == 'VAR' and token.value not in global_vars and not start_main and \
+                        not start_func:
+                    global_vars.append(token.value)
+        except Exception:
+            return []
+        start_main = False
+        start_func = False
+        cnt = 0
         error = list()
+        for i in range(len(self.source)):
+            if 'main' in self.source[i]:
+                start_main = True
+            for func in thread_funcs:
+                if func in self.source[i]:
+                    start_func = True
+            if '{' in self.source[i]:
+                cnt += 1
+            if '}' in self.source[i]:
+                if cnt == 0:
+                    start_func = False
+                cnt -= 1
+            if start_func and cnt > 0 and not start_main:
+                for var in global_vars:
+                    if var in self.source[i] and ('load' not in self.source[i] and 'store' not in self.source[i]):
+                        error.append(i)
         mutexs = list()
         for i in range(len(self.source)):
             if "pthread_mutex_t" in self.source[i]:
@@ -402,11 +481,11 @@ class CodeAnalyzer:
         error = list()
         for i in range(len(self.source)):
             n = 0
-            if "int" in self.source[i] \
-                    or "float" in self.source[i] \
-                    or "double" in self.source[i] \
-                    or "bool" in self.source[i] \
-                    or "char" in self.source[i]:
+            if "int " in self.source[i] \
+                    or "float " in self.source[i] \
+                    or "double " in self.source[i] \
+                    or "bool " in self.source[i] \
+                    or "char " in self.source[i]:
                 n += 1
                 for j in self.source[i]:
                     if j == '(' or j == '{':
@@ -422,11 +501,9 @@ class CodeAnalyzer:
 
 
 if __name__ == "__main__":
-    file = open("../tests/test5.cpp", mode="r", encoding="utf8")
+    file = open("../tests/test113.cpp", mode="r", encoding="utf8")
     source = []
     for line in file:
-        source.append(line)
+         source.append(line)
     codeA = CodeAnalyzer(source)
-    codeA.search_sql_injection()
-
-
+    codeA.incorr_rw_synchr()
